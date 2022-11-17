@@ -4,21 +4,19 @@ import Host.TetrisPanel;
 import Models.Shape;
 import Models.TetrisBoard;
 import Models.TetrominoeEnum;
+import Utilities.TetrisKeyAdapter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class TetrisGameEngine extends JPanel {
+    private final int PERIOD_INTERVAL = 300;
     public Shape currentPiece;
     public boolean isPaused = false;
     public int currentX = 0;
     public int currentY = 0;
-
-    private final int PERIOD_INTERVAL = 300;
 
     private TetrisBoard board;
     private boolean isFallingFinished = false;
@@ -28,6 +26,20 @@ public class TetrisGameEngine extends JPanel {
 
     public TetrisGameEngine(TetrisPanel parent) {
         innitGame(parent);
+    }
+
+    public void dropDown() {
+        int newY = currentY;
+
+        while (newY > 0) {
+            if (!tryMove(currentPiece, currentX, newY - 1)) {
+                break;
+            }
+
+            newY--;
+        }
+
+        pieceDropped();
     }
 
     public void start() {
@@ -40,9 +52,50 @@ public class TetrisGameEngine extends JPanel {
         timer.start();
     }
 
+    public void pause() {
+        isPaused = !isPaused;
+
+        if (isPaused) {
+            var msg = String.format("Paused: %d", linesRemovedCount);
+            statusBar.setText(msg);
+        } else {
+            statusBar.setText(String.valueOf(linesRemovedCount));
+        }
+
+        repaint();
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         doDrawing(g);
+    }
+
+    public void oneLineDown() {
+        if (!tryMove(currentPiece, currentX, currentY - 1)) {
+            pieceDropped();
+        }
+    }
+
+    public boolean tryMove(Shape newPiece, int newX, int newY) {
+        for (int i = 0; i < 4; i++) {
+            int x = newX + newPiece.getX(i);
+            int y = newY - newPiece.getY(i);
+            if (x < 0 || x >= board.getBoardWidth() || y < 0 || y >= board.getBoardHeight()) {
+                return false;
+            }
+
+            if (board.shapeAt(x, y) != TetrominoeEnum.NoShape) {
+                return false;
+            }
+        }
+
+        currentPiece = newPiece;
+        currentX = newX;
+        currentY = newY;
+
+        repaint();
+
+        return true;
     }
 
     protected void doGameCycle() {
@@ -64,21 +117,7 @@ public class TetrisGameEngine extends JPanel {
         board = new TetrisBoard();
         setFocusable(true);
         statusBar = parent.getStatusBar();
-        addKeyListener(new TetrisKeyAdapter());
-    }
-
-    private void dropDown() {
-        int newY = currentY;
-
-        while (newY > 0) {
-            if (!tryMove(currentPiece, currentX, newY - 1)) {
-                break;
-            }
-
-            newY--;
-        }
-
-        pieceDropped();
+        addKeyListener(new TetrisKeyAdapter(this));
     }
 
     private void drawSquare(Graphics g, int x, int y, TetrominoeEnum shapeType) {
@@ -140,25 +179,6 @@ public class TetrisGameEngine extends JPanel {
         }
     }
 
-    private void oneLineDown() {
-        if (!tryMove(currentPiece, currentX, currentY - 1)) {
-            pieceDropped();
-        }
-    }
-
-    private void pause() {
-        isPaused = !isPaused;
-
-        if (isPaused) {
-            var msg = String.format("Paused: %d", linesRemovedCount);
-            statusBar.setText(msg);
-        } else {
-            statusBar.setText(String.valueOf(linesRemovedCount));
-        }
-
-        repaint();
-    }
-
     private void pieceDropped() {
         for (int i = 0; i < 4; i++) {
             int x = currentX + currentPiece.getX(i);
@@ -171,28 +191,6 @@ public class TetrisGameEngine extends JPanel {
         if (!isFallingFinished) {
             newPiece();
         }
-    }
-
-    private boolean tryMove(Shape newPiece, int newX, int newY) {
-        for (int i = 0; i < 4; i++) {
-            int x = newX + newPiece.getX(i);
-            int y = newY - newPiece.getY(i);
-            if (x < 0 || x >= board.getBoardWidth() || y < 0 || y >= board.getBoardHeight()) {
-                return false;
-            }
-
-            if (board.shapeAt(x, y) != TetrominoeEnum.NoShape) {
-                return false;
-            }
-        }
-
-        currentPiece = newPiece;
-        currentX = newX;
-        currentY = newY;
-
-        repaint();
-
-        return true;
     }
 
     private void removeFullLines() {
@@ -229,27 +227,6 @@ public class TetrisGameEngine extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             doGameCycle();
-        }
-    }
-
-    public class TetrisKeyAdapter extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (currentPiece.getTetrominoeShape() == TetrominoeEnum.NoShape) {
-                return;
-            }
-
-            int keycode = e.getKeyCode();
-
-            switch (keycode) {
-                case KeyEvent.VK_P -> pause();
-                case KeyEvent.VK_LEFT -> tryMove(currentPiece, currentX - 1, currentY);
-                case KeyEvent.VK_RIGHT -> tryMove(currentPiece, currentX + 1, currentY);
-                case KeyEvent.VK_DOWN -> tryMove(currentPiece.rotateRight(), currentX, currentY);
-                case KeyEvent.VK_UP -> tryMove(currentPiece.rotateLeft(), currentX, currentY);
-                case KeyEvent.VK_SPACE -> dropDown();
-                case KeyEvent.VK_D -> oneLineDown();
-            }
         }
     }
 }
