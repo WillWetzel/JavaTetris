@@ -24,6 +24,10 @@ public class TetrisGameEngine extends JPanel {
     private Timer timer;
     private JLabel statusBar;
 
+    public TetrisBoard getGameBoard() {
+        return this.board;
+    }
+
     public TetrisGameEngine(TetrisPanel parent) {
         innitGame(parent);
     }
@@ -65,11 +69,6 @@ public class TetrisGameEngine extends JPanel {
         repaint();
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        doDrawing(g);
-    }
-
     public void oneLineDown() {
         if (!tryMove(currentPiece, currentX, currentY - 1)) {
             pieceDropped();
@@ -84,7 +83,7 @@ public class TetrisGameEngine extends JPanel {
                 return false;
             }
 
-            if (board.shapeAt(x, y) != TetrominoeEnum.NoShape) {
+            if (board.getBoardSquare(x, y) != TetrominoeEnum.NoShape) {
                 return false;
             }
         }
@@ -96,6 +95,11 @@ public class TetrisGameEngine extends JPanel {
         repaint();
 
         return true;
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        doDrawing(g);
     }
 
     protected void doGameCycle() {
@@ -148,7 +152,7 @@ public class TetrisGameEngine extends JPanel {
 
         for (int i = 0; i < board.getBoardHeight(); i++) {
             for (int j = 0; j < board.getBoardWidth(); j++) {
-                TetrominoeEnum shape = board.shapeAt(j, board.getBoardHeight() - i - 1);
+                TetrominoeEnum shape = board.getBoardSquare(j, board.getBoardHeight() - i - 1);
                 if (shape != TetrominoeEnum.NoShape) {
                     drawSquare(g, j * board.squareWidth((int) size.getWidth()), boardTop + i * board.squareHeight((int) size.getHeight()), shape);
                 }
@@ -194,15 +198,13 @@ public class TetrisGameEngine extends JPanel {
     }
 
     private void removeFullLines() {
-
-
         int fullLineCount = 0;
 
         for (int i = board.getBoardHeight() - 1; i >= 0; i--) {
             boolean lineIsFull = true;
 
             for (int j = 0; j < board.getBoardWidth(); j++) {
-                if (board.shapeAt(j, i) == TetrominoeEnum.NoShape) {
+                if (board.getBoardSquare(j, i) == TetrominoeEnum.NoShape) {
                     lineIsFull = false;
                     break;
                 }
@@ -215,7 +217,7 @@ public class TetrisGameEngine extends JPanel {
             }
         }
 
-        if (fullLineCount > 0) {
+         if (fullLineCount > 0) {
             linesRemovedCount += fullLineCount;
             statusBar.setText(String.valueOf(linesRemovedCount));
             isFallingFinished = true;
