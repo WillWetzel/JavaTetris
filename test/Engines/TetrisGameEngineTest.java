@@ -1,7 +1,7 @@
 package Engines;
 
 import Host.TetrisPanel;
-import Models.Shape;
+import Models.TetrominoeShape;
 import Models.TetrisBoard;
 import Models.TetrominoeEnum;
 import org.junit.jupiter.api.Test;
@@ -38,39 +38,21 @@ class TetrisGameEngineTest {
         assertTrue(updatedBoardContainsTetrominoe);
     }
 
-    // Should re do this test to mock up the game engine to return exact shape types
-    // Too hit or miss right now depending on rand() generation.
     @Test
     void dropDownProvidesUniqueShapeTest() {
         // Arrange
         initializeTestBase();
         gameEngine.start();
-
-        Shape oldShape = gameEngine.currentPiece;
-        TetrisBoard oldBoard = gameEngine.getGameBoard();
-        int expectedXDrop = gameEngine.currentX + oldShape.getX(0);
-        int y = gameEngine.currentY;
-
-        while (y > 0) {
-            if (!gameEngine.tryMove(oldShape, gameEngine.currentX, y - 1)) {
-                break;
-            }
-
-            y--;
-        }
-
-        int expectedYDrop = y;
-        TetrominoeEnum oldShapeTypeAtDroppedCoords = oldBoard.getBoardSquare(expectedXDrop, expectedYDrop);
+        TetrominoeShape firstPiece = new TetrominoeShape(gameEngine.currentPiece);
 
         // Act
         gameEngine.doGameCycle();
         gameEngine.dropDown();
         gameEngine.doGameCycle();
+        TetrominoeShape secondPiece = new TetrominoeShape(gameEngine.currentPiece);
 
         // Assert
-        TetrisBoard updatedBoard = gameEngine.getGameBoard();
-        TetrominoeEnum updatedShapeType = updatedBoard.getBoardSquare(expectedXDrop, expectedYDrop);
-        assertNotEquals(oldShapeTypeAtDroppedCoords, updatedShapeType);
+        assertNotEquals(firstPiece, secondPiece);
     }
 
     @Test

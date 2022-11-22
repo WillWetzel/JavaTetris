@@ -2,13 +2,19 @@ package Models;
 
 import java.util.Random;
 
-public class Shape {
+public class TetrominoeShape {
     private TetrominoeEnum tetrominoeShape;
     private int coords[][];
     private int[][][] coordsTable;
 
-    public Shape() {
+    public TetrominoeShape() {
         innitShape();
+    }
+
+    public TetrominoeShape(TetrominoeShape oldShape) {
+        this.tetrominoeShape = oldShape.tetrominoeShape;
+        this.coords = oldShape.coords;
+        this.coordsTable = oldShape.coordsTable;
     }
 
     public int getX(int index) {
@@ -19,12 +25,12 @@ public class Shape {
         return coords[index][1];
     }
 
-    public Shape rotateLeft() {
+    public TetrominoeShape rotateLeft() {
         if (tetrominoeShape == TetrominoeEnum.SquareShape) {
             return this;
         }
 
-        var result = new Shape();
+        var result = new TetrominoeShape();
         result.tetrominoeShape = tetrominoeShape;
 
         for (int i = 0; i < 4; ++i) {
@@ -35,12 +41,12 @@ public class Shape {
         return result;
     }
 
-    public Shape rotateRight() {
+    public TetrominoeShape rotateRight() {
         if (tetrominoeShape == TetrominoeEnum.SquareShape) {
             return this;
         }
 
-        var result = new Shape();
+        var result = new TetrominoeShape();
         result.tetrominoeShape = tetrominoeShape;
 
         for (int i = 0; i < 4; ++i) {

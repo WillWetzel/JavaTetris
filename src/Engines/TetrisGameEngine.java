@@ -1,7 +1,7 @@
 package Engines;
 
 import Host.TetrisPanel;
-import Models.Shape;
+import Models.TetrominoeShape;
 import Models.TetrisBoard;
 import Models.TetrominoeEnum;
 import Utilities.TetrisKeyAdapter;
@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 
 public class TetrisGameEngine extends JPanel {
     private final int PERIOD_INTERVAL = 300;
-    public Shape currentPiece;
+    public TetrominoeShape currentPiece;
     public boolean isPaused = false;
     public int currentX = 0;
     public int currentY = 0;
@@ -47,7 +47,7 @@ public class TetrisGameEngine extends JPanel {
     }
 
     public void start() {
-        currentPiece = new Shape();
+        currentPiece = new TetrominoeShape();
 
         board.clearBoard();
         newPiece();
@@ -75,7 +75,7 @@ public class TetrisGameEngine extends JPanel {
         }
     }
 
-    public boolean tryMove(Shape newPiece, int newX, int newY) {
+    public boolean tryMove(TetrominoeShape newPiece, int newX, int newY) {
         for (int i = 0; i < 4; i++) {
             int x = newX + newPiece.getX(i);
             int y = newY - newPiece.getY(i);
