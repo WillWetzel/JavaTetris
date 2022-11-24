@@ -5,6 +5,11 @@ import java.util.Random;
 public class TetrominoeShape {
     private TetrominoeEnum tetrominoeShape;
     private int coords[][];
+
+    /* Holds all possible coordinates of a tetris piece.
+     / One row of the coordinate values is placed into the coords class variable.
+     / E.g. { 0, -1 },  { 0, 0 },   { -1, 0 },  { -1, 1 } represents a rotated S Shape.
+     */
     private int[][][] coordsTable;
 
     public TetrominoeShape() {
@@ -101,14 +106,14 @@ public class TetrominoeShape {
         coords = new int[4][2];
 
         coordsTable = new int[][][] {
-                { { 0, 0 },   { 0, 0 },   { 0, 0 },   { 0, 0 } },
-                { { 0, -1 },  { 0, 0 },   { -1, 0 },  { -1, 1 } },
-                { { 0, -1 },  { 0, 0 },   { 1, 0 },   { 1, 1 } },
-                { { 0, -1 },  { 0, 0 },   { 0, 1 },   { 0, 2 } },
-                { { -1, 0 },  { 0, 0 },   { 1, 0 },   { 0, 1 } },
-                { { 0, 0 },   { 1, 0 },   { 0, 1 },   { 1, 1 } },
-                { { -1, -1 }, { 0, -1 },  { 0, 0 },   { 0, 1 } },
-                { { 1, -1 },  { 0, -1 },  { 0, 0 },   { 0, 1 } }
+                { { 0, 0 },   { 0, 0 },   { 0, 0 },   { 0, 0 } },   // No Shape
+                { { 0, -1 },  { 0, 0 },   { -1, 0 },  { -1, 1 } },  // SShape
+                { { 0, -1 },  { 0, 0 },   { 1, 0 },   { 1, 1 } },   // ZShape (MirroredSShape)
+                { { 0, -1 },  { 0, 0 },   { 0, 1 },   { 0, 2 } },   // LineShape
+                { { -1, 0 },  { 0, 0 },   { 1, 0 },   { 0, 1 } },   // TShape
+                { { 0, 0 },   { 1, 0 },   { 0, 1 },   { 1, 1 } },   // SquareShape
+                { { 1, -1 },  { 0, -1 },  { 0, 0 },   { 0, 1 } },   // LShape
+                { { -1, -1 }, { 0, -1 },  { 0, 0 },   { 0, 1 } }    // MirroredLShape
         };
 
         setShape(TetrominoeEnum.NoShape);
